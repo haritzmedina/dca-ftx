@@ -31,10 +31,19 @@ let rounder = (num, places, mode) => {
 
 
 let main = async () => {
-    const { price } = await FTX_INSTANCE.getPrice(pair)
-    let buyPrice = rounder(price * (1 - lessThanCurrentPercentage), 0, 0)
-    const res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'limit', buyPrice)
-    console.log('Pair:' + pair + ' Quantity:' + quantity + ' Price:' + buyPrice)
+    try {
+        const {price} = await FTX_INSTANCE.getPrice(pair)
+        let res = null
+        if (lessThanCurrentPercentage === 0) {
+            res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'market')
+        } else {
+            let buyPrice = rounder(price * (1 - lessThanCurrentPercentage), 0, 0)
+            res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'limit', buyPrice)
+            console.log('Pair:' + pair + ' Quantity:' + quantity + ' Price:' + buyPrice)
+        }
+    } catch (e) {
+        console.error(e)
+    }
 }
 
-main()
+main().catch()
