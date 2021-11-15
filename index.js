@@ -32,7 +32,7 @@ let rounder = (num, places, mode) => {
 
 let main = async () => {
     try {
-        const {price, change24h} = await FTX_INSTANCE.getPrice('lpt/usd')
+        const {price, change24h} = await FTX_INSTANCE.getPrice(pair)
         let res = null
         if (lessThanCurrentPercentage === 0) {
             res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'market')
