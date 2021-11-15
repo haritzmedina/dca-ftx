@@ -32,13 +32,23 @@ let rounder = (num, places, mode) => {
 
 let main = async () => {
     try {
-        const {price} = await FTX_INSTANCE.getPrice(pair)
+        const {price, change24h} = await FTX_INSTANCE.getPrice('lpt/usd')
         let res = null
         if (lessThanCurrentPercentage === 0) {
             res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'market')
         } else {
-            let buyPrice = rounder(price * (1 - lessThanCurrentPercentage), 0, 0)
-            res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'limit', buyPrice)
+            let buyPrice
+            if (change24h > lessThanCurrentPercentage) {
+                buyPrice = rounder(price * (1 - lessThanCurrentPercentage), 0, 0)
+                res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'limit', buyPrice)
+            } else if (change24h >= 0) {
+                buyPrice = rounder(price * (1 - (change24h - lessThanCurrentPercentage)), 0, 0)
+                res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'limit', buyPrice)
+            } else if (change24h < 0 && lessThanCurrentPercentage > -change24h) { // If it is lower, but still not that low as lessThan, buy in less than price
+                res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'limit', buyPrice)
+            } else { // If is lower than lessThan, directly buy
+                res = await FTX_INSTANCE.createOrder(quantity, pair, 'buy', 'market')
+            }
             console.log('Pair:' + pair + ' Quantity:' + quantity + ' Price:' + buyPrice)
         }
     } catch (e) {
