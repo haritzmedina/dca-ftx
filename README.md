@@ -1,3 +1,6 @@
+> **Warning**
+> Nowadays FTX has declared in bankruptcy, check for latest information. This repo is currently kept as public for learning purposes and possible reusability in other exchanges or projects to conduct DCA. Please don't put any money in any exchange if you don't trust and keep save your crypto preferably in hot or cold wallets!
+
 # dca-ftx
 It is a small script to do dollar cost averaging of a pair in FTX exchange using cron.
 
